@@ -108,7 +108,7 @@ A Glance:
     >>> text = fulltext(html)
 
 
-Newspaper has *seamless* language extraction and detection.
+Newspaper can extract and detect languages *seamlessly*.
 If no language is specified, Newspaper will attempt to auto detect a language.
 
 .. code-block:: pycon
@@ -163,10 +163,22 @@ If you are certain that an *entire* news source is in one language, **go ahead a
     两年双免0手续0利率 科鲁兹掀背金融轻松购_武汉车市_武汉汽
     车网_新浪汽车_新浪网
 
-Documentation
--------------
 
-Check out `The Documentation`_ for full and detailed guides using newspaper.
+Enjoy Newspaper3k? 
+------------------
+`Click here to see SerpApi, scrape search engines easily with SerpApi - Search API`_. 
+Scrape Google Search, Google News, Google Maps, and more!
+
+.. image:: https://github.com/user-attachments/assets/9a80eeb4-72a8-43f1-9413-93c7a47b2bf6
+        :target: https://serpapi.com/google-news-api?utm_source=newspaper3k_github
+        :alt: Scrape search engines easily with SerpApi - Search API. 
+
+.. _`Click here to see SerpApi, scrape search engines easily with SerpApi - Search API`: https://serpapi.com?utm_source=newspaper3k_github
+
+Docs
+----
+
+Check out `The Docs`_ for full and detailed guides using newspaper.
 
 Interested in adding a new language for us? Refer to: `Docs - Adding new languages <https://newspaper.readthedocs.io/en/latest/user_guide/advanced.html#adding-new-languages>`_
 
@@ -193,28 +205,61 @@ Features
     input code      full name
 
       ar              Arabic
-      ru              Russian
-      nl              Dutch
+      be              Belarusian
+      bg              Bulgarian
+      da              Danish
       de              German
+      el              Greek
       en              English
       es              Spanish
+      et              Estonian
+      fa              Persian
+      fi              Finnish
       fr              French
       he              Hebrew
+      hi              Hindi
+      hr              Croatian
+      hu              Hungarian
+      id              Indonesian
       it              Italian
+      ja              Japanese
       ko              Korean
+      lt              Lithuanian
+      mk              Macedonian
+      nb              Norwegian (Bokmål)
+      nl              Dutch
       no              Norwegian
       pl              Polish
       pt              Portuguese
+      ro              Romanian
+      ru              Russian
+      sl              Slovenian
+      sr              Serbian
       sv              Swedish
-      hu              Hungarian
-      fi              Finnish
-      da              Danish
-      zh              Chinese
-      id              Indonesian
-      vi              Vietnamese
+      sw              Swahili
+      th              Thai
       tr              Turkish
-      el              Greek
+      uk              Ukrainian
+      vi              Vietnamese
+      zh              Chinese
 
+
+BrightData: Scrape Any Website, at Scale, Without Getting Blocked
+-----------------------------------------------------------------
+👉 `Get instant access to BrightData’s AI-powered web scraping tools and datasets.`_
+
+* ✅ AI-powered scraping browser
+* ✅ 72M+ rotating IPs
+* ✅ Zero bans, faster extraction
+* `👉 Get access now.`_
+
+.. image:: https://github.com/user-attachments/assets/ca540b8b-7888-49d2-89df-2c07760f6d9f
+        :target: https://get.brightdata.com/hm89s0nowetp
+        :alt: Bright Data's Scraping Browser Product
+
+.. _`Get instant access to BrightData’s AI-powered web scraping tools and datasets.`: https://get.brightdata.com/hm89s0nowetp
+
+.. _`👉 Get access now.`: https://get.brightdata.com/hm89s0nowetp
 
 Get it now
 ----------
@@ -310,6 +355,8 @@ Demo
 
 View a working online demo here: http://newspaper-demo.herokuapp.com
 
+This is another working online demo: http://newspaper.chinazt.cc/
+
 LICENSE
 -------
 
@@ -328,8 +375,12 @@ to talk about the future of this library and news extraction in general!
 .. _`python-goose's`: https://github.com/grangier/python-goose
 .. _`here`: https://github.com/codelucas/newspaper/blob/master/GOOSE-LICENSE.txt
 
+.. _`https://www.paypal.me/codelucas`: https://www.paypal.me/codelucas
+.. _`Venmo`: https://www.venmo.com/Lucas-Ou-Yang
+
 .. _`Quickstart guide`: https://newspaper.readthedocs.io/en/latest/
-.. _`The Documentation`: https://newspaper.readthedocs.io
+.. _`The Docs`: https://newspaper.readthedocs.io
 .. _`lxml`: http://lxml.de/
 .. _`requests`: https://github.com/kennethreitz/requests
 .. _`Parse.ly`: http://parse.ly
+.. _`It takes only one click`: https://tracking.gitads.io/?campaign=gitads&repo=newspaper&redirect=gitads.io

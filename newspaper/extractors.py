@@ -136,7 +136,7 @@ class ContentExtractor(object):
         # Try 1: Search popular author tags for authors
 
         ATTRS = ['name', 'rel', 'itemprop', 'class', 'id']
-        VALS = ['author', 'byline', 'dc.creator']
+        VALS = ['author', 'byline', 'dc.creator', 'byl']
         matches = []
         authors = []
 
@@ -153,7 +153,7 @@ class ContentExtractor(object):
                 if len(mm) > 0:
                     content = mm[0]
             else:
-                content = match.text or ''
+                content = match.text_content() or ''
             if len(content) > 0:
                 authors.extend(parse_byline(content))
 
@@ -183,12 +183,12 @@ class ContentExtractor(object):
             if date_str:
                 try:
                     return date_parser(date_str)
-                except (ValueError, OverflowError, AttributeError):
+                except (ValueError, OverflowError, AttributeError, TypeError):
                     # near all parse failures are due to URL dates without a day
                     # specifier, e.g. /2014/04/
                     return None
 
-        date_match = re.search(urls.DATE_REGEX, url)
+        date_match = re.search(urls.STRICT_DATE_REGEX, url)
         if date_match:
             date_str = date_match.group(0)
             datetime_obj = parse_date_str(date_str)
@@ -216,6 +216,8 @@ class ContentExtractor(object):
              'content': 'content'},
             {'attribute': 'pubdate', 'value': 'pubdate',
              'content': 'datetime'},
+            {'attribute': 'name', 'value': 'publish_date',
+             'content': 'content'},
         ]
         for known_meta_tag in PUBLISH_DATE_TAGS:
             meta_tags = self.parser.getElementsByTag(
@@ -285,7 +287,7 @@ class ContentExtractor(object):
 
         # create filtered versions of title_text, title_text_h1, title_text_fb
         # for finer comparison
-        filter_regex = re.compile(r'[^a-zA-Z0-9\ ]')
+        filter_regex = re.compile(r'[^\u4e00-\u9fa5a-zA-Z0-9\ ]')
         filter_title_text = filter_regex.sub('', title_text).lower()
         filter_title_text_h1 = filter_regex.sub('', title_text_h1).lower()
         filter_title_text_fb = filter_regex.sub('', title_text_fb).lower()
@@ -447,19 +449,19 @@ class ContentExtractor(object):
         """
         top_meta_image, try_one, try_two, try_three, try_four = [None] * 5
         try_one = self.get_meta_content(doc, 'meta[property="og:image"]')
-        if try_one is None:
-            link_icon_kwargs = {'tag': 'link', 'attr': 'rel', 'value': 'icon'}
-            elems = self.parser.getElementsByTag(doc, **link_icon_kwargs)
+        if not try_one:
+            link_img_src_kwargs = \
+                {'tag': 'link', 'attr': 'rel', 'value': 'img_src|image_src'}
+            elems = self.parser.getElementsByTag(doc, use_regex=True, **link_img_src_kwargs)
             try_two = elems[0].get('href') if elems else None
 
-        if try_two is None:
-            link_img_src_kwargs = \
-                {'tag': 'link', 'attr': 'rel', 'value': 'img_src'}
-            elems = self.parser.getElementsByTag(doc, **link_img_src_kwargs)
-            try_three = elems[0].get('href') if elems else None
+            if not try_two:
+                try_three = self.get_meta_content(doc, 'meta[name="og:image"]')
 
-        if try_three is None:
-            try_four = self.get_meta_content(doc, 'meta[name="og:image"]')
+                if not try_three:
+                    link_icon_kwargs = {'tag': 'link', 'attr': 'rel', 'value': 'icon'}
+                    elems = self.parser.getElementsByTag(doc, **link_icon_kwargs)
+                    try_four = elems[0].get('href') if elems else None
 
         top_meta_image = try_one or try_two or try_three or try_four
 
@@ -471,6 +473,11 @@ class ContentExtractor(object):
         """Returns meta type of article, open graph protocol
         """
         return self.get_meta_content(doc, 'meta[property="og:type"]')
+
+    def get_meta_site_name(self, doc):
+        """Returns site name of article, open graph protocol
+        """
+        return self.get_meta_content(doc, 'meta[property="og:site_name"]')
 
     def get_meta_description(self, doc):
         """If the article has meta description set in the source, use that
@@ -504,7 +511,7 @@ class ContentExtractor(object):
             key_head = key.pop(0)
             ref = data[key_head]
 
-            if isinstance(ref, str):
+            if isinstance(ref, str) or isinstance(ref, int):
                 data[key_head] = {key_head: ref}
                 ref = data[key_head]
 
@@ -514,7 +521,7 @@ class ContentExtractor(object):
                     break
                 if not ref.get(part):
                     ref[part] = dict()
-                elif isinstance(ref.get(part), str):
+                elif isinstance(ref.get(part), str) or isinstance(ref.get(part), int):
                     # Not clear what to do in this scenario,
                     # it's not always a URL, but an ID of some sort
                     ref[part] = {'identifier': ref[part]}
@@ -591,7 +598,7 @@ class ContentExtractor(object):
         a_kwargs = {'tag': 'a'}
         a_tags = self.parser.getElementsByTag(doc, **a_kwargs)
 
-        # TODO: this should be refactored! We should have a seperate
+        # TODO: this should be refactored! We should have a separate
         # method which siphones the titles our of a list of <a> tags.
         if titles:
             return [(a.get('href'), a.text) for a in a_tags if a.get('href')]
@@ -836,7 +843,7 @@ class ContentExtractor(object):
         return top_node
 
     def is_boostable(self, node):
-        """Alot of times the first paragraph might be the caption under an image
+        """A lot of times the first paragraph might be the caption under an image
         so we'll want to make sure if we're going to boost a parent node that
         it should be connected to other paragraphs, at least for the first n
         paragraphs so we'll want to make sure that the next sibling is a
@@ -863,12 +870,7 @@ class ContentExtractor(object):
         return False
 
     def walk_siblings(self, node):
-        current_sibling = self.parser.previousSibling(node)
-        b = []
-        while current_sibling is not None:
-            b.append(current_sibling)
-            current_sibling = self.parser.previousSibling(current_sibling)
-        return b
+        return self.parser.previousSiblings(node)
 
     def add_siblings(self, top_node):
         baseline_score_siblings_para = self.get_siblings_score(top_node)
